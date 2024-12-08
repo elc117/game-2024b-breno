@@ -1,0 +1,7 @@
+background.png
+bucket.png
+delayed-loading/music.mp3
+drop.mp3
+drop.png
+libgdx.png
+splash.png
