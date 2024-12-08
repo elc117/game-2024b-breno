@@ -1,11 +1,4 @@
-# libGDX example: a simple game
-
-A simple game from the libGDX wiki tutorials.
-
-## Links
-- Demo: https://libgdx.com/wiki/start/a-simple-game
-- Source code: https://github.com/libgdx/libgdx-wiki-examples/tree/master/a-simple-game
-  
+# libGDX jogo de perguntas sobre Geoparque Caçapava Mundial UNESCO com temática do Mario Kart
 ## Running on GitHub Codespaces
 
 1. Click on 'Code', select 'Codespaces' and click '+' to create a Codespace on master
