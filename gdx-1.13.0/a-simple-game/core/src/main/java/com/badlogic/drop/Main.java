@@ -78,10 +78,12 @@ public class Main implements ApplicationListener {
         currentQuestionIndex = 0;
         currentQuestion = questions.get(currentQuestionIndex);
 
-        music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
-        music.setLooping(true);
-        music.setVolume(0.5f);
-        music.play();
+        preloader.preloadBundle("delayed-loading", bundle -> {
+            music = Gdx.audio.newMusic(Gdx.files.internal("delayed-loading/music.mp3"));
+            music.setLooping(true);
+            music.setVolume(.5f);
+            music.play();
+        });
     }
 
     @Override
@@ -113,13 +115,6 @@ public class Main implements ApplicationListener {
         if (Gdx.input.isTouched()) {
             clickedSplash = true;
         }
-
-            preloader.preloadBundle("delayed-loading", bundle -> {
-                music = Gdx.audio.newMusic(Gdx.files.internal("delayed-loading/music.mp3"));
-                music.setLooping(true);
-                music.setVolume(.5f);
-                music.play();
-            });
         }
 
     private void input() {
