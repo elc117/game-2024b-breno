@@ -47,19 +47,19 @@ public class Main implements ApplicationListener {
         marioTexture = new Texture("mario.png");
         splashTexture = new Texture("splash.png");
         spriteBatch = new SpriteBatch();
-        viewport = new FitViewport(8, 5);
+        viewport = new FitViewport(16, 9);
         marioSprite = new Sprite(marioTexture);
         marioSprite.setSize(1, 1);
         marioSprite.setPosition(1, 2);
         splashSprite = new Sprite(splashTexture);
-        splashSprite.setSize(4, 2);
-        splashSprite.setPosition(2, 1.5f);
+        splashSprite.setSize(2, 2);
+        splashSprite.setPosition(2, 1f);
         touchPos = new Vector2();
         clickedSplash = false;
 
         font = new BitmapFont();
         font.setColor(Color.WHITE);
-        font.getData().setScale(0.1f); //preciso arrumar o tamanho da fonte
+        font.getData().setScale(0.05f); //preciso arrumar o tamanho da fonte
 
         questions = new Array<>();
         questions.add("Qual é a formação geológica mais conhecida no Caçapava Geoparque Mundial da Unesco?");
@@ -81,7 +81,7 @@ public class Main implements ApplicationListener {
         preloader.preloadBundle("delayed-loading", bundle -> {
             music = Gdx.audio.newMusic(Gdx.files.internal("delayed-loading/music.mp3"));
             music.setLooping(true);
-            music.setVolume(.5f);
+            music.setVolume(0.5f);
             music.play();
         });
     }
