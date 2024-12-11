@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.utils.Timer;
+
 
 
 
@@ -245,7 +247,7 @@ public class Main implements ApplicationListener {
                 // Verifica se é a 10ª pergunta
                 if (currentQuestionIndex >= 10) {
                     Gdx.app.log("DEBUG", "Fim do jogo. Encerrando...");
-                    showFinalMessage(); // Exibe a mensagem final
+                    renderFinalMessage(); // Exibe a mensagem final
                     Gdx.app.exit(); // Encerra o aplicativo
                     return; // Garante que o restante do código não seja executado
                 }
@@ -264,38 +266,26 @@ public class Main implements ApplicationListener {
         movingSprites.removeAll(spritesToRemove, true);
     }
 
-    private void showFinalMessage() {
-        Gdx.app.log("FINAL_MESSAGE", "Parabéns! Você finalizou o jogo com um score de: " + score);
+    private void renderFinalMessage() {
+        ScreenUtils.clear(0, 0, 0, 1); // Limpa a tela com cor preta
 
-        // Exibe uma mensagem gráfica
-        SpriteBatch batch = new SpriteBatch();
-        BitmapFont font = new BitmapFont();
-        font.getData().setScale(2);
+        spriteBatch.begin();
 
-        new Thread(() -> {
-            float duration = 3; // Duração em segundos
-            float elapsed = 0;
+        // Configura o texto e exibe a mensagem
+        bitmapFont.getData().setScale(0.05f);
+        bitmapFont.setColor(Color.WHITE);
+        String finalMessage = "Fim de jogo!\nScore final: " + score;
+        bitmapFont.draw(spriteBatch, finalMessage, viewport.getWorldWidth() / 4, viewport.getWorldHeight() / 2);
 
-            while (elapsed < duration) {
-                ScreenUtils.clear(0, 0, 0, 1); // Limpa a tela com cor preta
+        spriteBatch.end();
 
-                batch.begin();
-                font.draw(batch, "Fim de jogo!", 200, 300);
-                font.draw(batch, "Score final: " + score, 200, 250);
-                batch.end();
-
-                elapsed += Gdx.graphics.getDeltaTime();
-                try {
-                    Thread.sleep(16); // Aproximadamente 60 FPS
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
+        // Usa um Timer do GWT para aguardar 3 segundos antes de fechar o jogo
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                Gdx.app.exit();
             }
-
-            batch.dispose();
-            font.dispose();
-        }).start();
+        }, 3); // Aguarda 3 segundos
     }
 
     private void draw() {
