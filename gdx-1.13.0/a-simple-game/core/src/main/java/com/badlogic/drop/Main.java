@@ -24,8 +24,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.Timer;
 
 
-
-
 public class Main implements ApplicationListener {
 
     Texture backgroundTexture;
@@ -59,21 +57,22 @@ public class Main implements ApplicationListener {
     public void create() {
         backgroundTexture = new Texture("background.png");
         marioTexture = new Texture("mario.png");
-        splashTexture = new Texture("splash.png");
-        bananaTexture = new Texture("banana.png");
-        coinTexture = new Texture("coin.png");
-        starTexture = new Texture("star.png");
-
-        bananaSprite = new Sprite(bananaTexture);
-        coinSprite = new Sprite(coinTexture);
-        starSprite = new Sprite(starTexture);
-        spriteBatch = new SpriteBatch();
         marioSprite = new Sprite(marioTexture);
         marioSprite.setSize(1, 1);
         marioSprite.setPosition(1, 2);
+
+        splashTexture = new Texture("splash.png");
+        spriteBatch = new SpriteBatch();
         splashSprite = new Sprite(splashTexture);
         splashSprite.setSize(2, 2);
         splashSprite.setPosition(2, 1f);
+
+        bananaTexture = new Texture("banana.png");
+        bananaSprite = new Sprite(bananaTexture);
+        coinTexture = new Texture("coin.png");
+        coinSprite = new Sprite(coinTexture);
+        starTexture = new Texture("star.png");
+        starSprite = new Sprite(starTexture);
 
         viewport = new FitViewport(16, 9);
         touchPos = new Vector2();
@@ -81,7 +80,7 @@ public class Main implements ApplicationListener {
         currentQuestionIndex = 0;
         movingSprites = new Array<>();
 
-        bitmapFont = new BitmapFont();
+        bitmapFont = new BitmapFont(); //fonte muito bugada, não achei outra solução
         correctAnswers = new HashMap<>();
         correctAnswers.put(0, coinSprite);
         correctAnswers.put(1, starSprite);
@@ -94,10 +93,8 @@ public class Main implements ApplicationListener {
         correctAnswers.put(8, coinSprite);
         correctAnswers.put(9, coinSprite);
         score = 0;
-
-
-        // Carrega as imagens das perguntas
         questionTextures = new ArrayList<>();
+
         for (int i = 1; i <= 10; i++) {
             questionTextures.add(new Texture("questao" + i + ".png"));
         }
@@ -166,7 +163,6 @@ public class Main implements ApplicationListener {
             marioSprite.setCenter(touchPos.x, touchPos.y);
         }
 
-        // Restringe o movimento do Mario dentro dos limites
         marioSprite.setX(MathUtils.clamp(marioSprite.getX(), 0, viewport.getWorldWidth() - marioSprite.getWidth()));
         marioSprite.setY(MathUtils.clamp(marioSprite.getY(), 0, viewport.getWorldHeight() - marioSprite.getHeight()));
     }
@@ -176,28 +172,20 @@ public class Main implements ApplicationListener {
         float worldHeight = viewport.getWorldHeight();
         float spriteSize = 1f;
 
-        // Limpa sprites antigos
         movingSprites.clear();
 
         Array<Float> yPositions = new Array<>();
-        Sprite correctSprite = correctAnswers.get(currentQuestionIndex); // Obtém o sprite correto
-
-        // Adiciona o sprite correto
+        Sprite correctSprite = correctAnswers.get(currentQuestionIndex);
         float correctY = MathUtils.random(0, worldHeight - spriteSize);
         correctSprite.setSize(spriteSize, spriteSize);
         correctSprite.setPosition(worldWidth, correctY);
-        movingSprites.add(new Sprite(correctSprite)); // Clona para evitar alterações
-
+        movingSprites.add(new Sprite(correctSprite));
         yPositions.add(correctY);
-
-        // Adiciona os outros dois sprites
         Array<Texture> possibleTextures = new Array<>(new Texture[]{bananaTexture, coinTexture, starTexture});
-        possibleTextures.removeValue(correctSprite.getTexture(), true); // Remove a textura correta
-
+        possibleTextures.removeValue(correctSprite.getTexture(), true);
         for (int i = 0; i < 2; i++) {
             float newY;
             boolean isValid;
-
             do {
                 newY = MathUtils.random(0, worldHeight - spriteSize);
                 isValid = true;
@@ -210,11 +198,8 @@ public class Main implements ApplicationListener {
             } while (!isValid);
 
             yPositions.add(newY);
-
-            // Seleciona uma textura aleatória das possíveis
             Texture randomTexture = possibleTextures.random();
-            possibleTextures.removeValue(randomTexture, true); // Remove a textura já usada
-
+            possibleTextures.removeValue(randomTexture, true);
             Sprite sprite = new Sprite(randomTexture);
             sprite.setSize(spriteSize, spriteSize);
             sprite.setPosition(worldWidth, newY);
@@ -224,41 +209,23 @@ public class Main implements ApplicationListener {
 
     private void checkCollision() {
         Array<Sprite> spritesToRemove = new Array<>();
-
         for (Sprite sprite : movingSprites) {
             if (marioSprite.getBoundingRectangle().overlaps(sprite.getBoundingRectangle())) {
                 Sprite correctSprite = correctAnswers.get(currentQuestionIndex);
-
-                Gdx.app.log("DEBUG", "Colisão detectada com sprite: " + sprite.getTexture());
-                Gdx.app.log("DEBUG", "Sprite correto esperado: " + correctSprite.getTexture());
-
-                // Verifica se o sprite colidido é a resposta correta com base na textura
                 if (sprite.getTexture() == correctSprite.getTexture()) {
                     if (correctSound != null) correctSound.play();
                     score++;
-                    Gdx.app.log("DEBUG", "Resposta correta! Score: " + score);
                 } else {
                     if (wrongSound != null) wrongSound.play();
-                    Gdx.app.log("DEBUG", "Resposta errada!");
                 }
-
                 currentQuestionIndex++;
-
-                // Verifica se é a 10ª pergunta
                 if (currentQuestionIndex >= 10) {
-                    Gdx.app.log("DEBUG", "Fim do jogo. Encerrando...");
-                    renderFinalMessage(); // Exibe a mensagem final
-                    Gdx.app.exit(); // Encerra o aplicativo
-                    return; // Garante que o restante do código não seja executado
+                    renderFinalMessage();
+                    Gdx.app.exit();
+                    return;
                 }
-
-                // Gera novos sprites para a próxima pergunta
                 generateSprites();
-
-                // Marca o sprite para remoção
                 spritesToRemove.add(sprite);
-
-                // Sai do loop após processar a colisão
                 break;
             }
         }
@@ -267,68 +234,46 @@ public class Main implements ApplicationListener {
     }
 
     private void renderFinalMessage() {
-        ScreenUtils.clear(0, 0, 0, 1); // Limpa a tela com cor preta
-
+        if (music != null && music.isPlaying()) {
+            music.stop();
+        }
+        ScreenUtils.clear(0, 0, 0, 1);
         spriteBatch.begin();
-
-        // Configura o texto e exibe a mensagem
-        bitmapFont.getData().setScale(0.05f);
+        float scale = viewport.getWorldHeight() / 100f;
+        bitmapFont.getData().setScale(scale);
         bitmapFont.setColor(Color.WHITE);
         String finalMessage = "Fim de jogo!\nScore final: " + score;
         bitmapFont.draw(spriteBatch, finalMessage, viewport.getWorldWidth() / 4, viewport.getWorldHeight() / 2);
-
         spriteBatch.end();
-
-        // Usa um Timer do GWT para aguardar 3 segundos antes de fechar o jogo
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
                 Gdx.app.exit();
             }
-        }, 3); // Aguarda 3 segundos
+        }, 3);
     }
 
-    private void draw() {
-        // Inicializa delta
-        float delta = Gdx.graphics.getDeltaTime();
 
-        // Configura a viewport e a projeção
+    private void draw() {
+        float delta = Gdx.graphics.getDeltaTime();
         viewport.apply();
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
-
         spriteBatch.begin();
-
-        // Desenha o fundo
         spriteBatch.draw(backgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
-
-        // Desenha a pergunta atual
         spriteBatch.draw(questionTextures.get(currentQuestionIndex), 0, viewport.getWorldHeight() - 2, 6, 2);
-
-        // Desenha o Mario
         marioSprite.draw(spriteBatch);
 
-        // Verifica e inicializa o bitmapFont se necessário
-        if (bitmapFont == null) {
-            System.out.println("Erro: bitmapFont não foi inicializado!");
-        } else {
-            bitmapFont.getData().setScale(0.05f);
-            bitmapFont.draw(spriteBatch, "Score: " + score, 1, viewport.getWorldHeight() - 2);
-        }
+        bitmapFont.getData().setScale(0.05f);
+        bitmapFont.draw(spriteBatch, "Score: " + score, 1, viewport.getWorldHeight() - 2);
 
-        // Processa os sprites móveis
         for (int i = movingSprites.size - 1; i >= 0; i--) {
             Sprite sprite = movingSprites.get(i);
-
-            // Movimenta os sprites para a esquerda
-            sprite.translateX(-1f * delta); // Velocidade ajustável
+            sprite.translateX(-1f * delta);
             sprite.draw(spriteBatch);
-
-            // Remove sprites que saíram da tela
             if (sprite.getX() + sprite.getWidth() < 0) {
                 movingSprites.removeIndex(i);
             }
         }
-
         spriteBatch.end();
     }
 
@@ -347,6 +292,8 @@ public class Main implements ApplicationListener {
             question.dispose();
         }
         spriteBatch.dispose();
+        if (music != null) music.dispose();
+        if (correctSound != null) correctSound.dispose();
+        if (wrongSound != null) wrongSound.dispose();
     }
-
 }
