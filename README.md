@@ -36,3 +36,4 @@ onde as respostas certas tem um som e a errada tem outro, a resposta certa tamb�
 O jogo finaliza depois de respondida a última questão apresentando o placar final. O jogo contém um pequeno problema com a vizualição do placar
 e o resultado final, como dito anteriormente tive problemas para entender como funciona a inserção de texto no jogo.
 
+![image](https://github.com/user-attachments/assets/f8f94dfc-c787-47f7-a251-3f2e4370c2f8)
